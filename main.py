@@ -24,7 +24,11 @@ def get_birthdays_per_week(users):
     for user in users:
         name = user['name']
         birthday = user['birthday']
-        birthday_this_year = birthday.replace(year=today.year)
+        if (birthday.month == 2 and birthday.day == 29):
+            day = birthday.day - 1
+            birthday_this_year = birthday.replace(year=today.year, day=day)
+        else:
+            birthday_this_year = birthday.replace(year=today.year)
         delta_days = (birthday_this_year - today).days
         if birthday_this_year >= today and delta_days < 7:
             if birthday.strftime('%A') in result.keys():
