@@ -1,40 +1,72 @@
-def parse_input(user_input):
-    cmd, *args = user_input.split()
-    cmd = cmd.strip().lower()
-    return cmd, *args
+def hello_command(args, contacts):
+    return 'How can I help you?'
+
+
+def exit_command(args, contacts):
+    return 'Good bye!'
+
 
 def add_contact(args, contacts):
     name, phone = args
     contacts[name] = phone
     return 'Contact added.'
 
+
+def change_contact(args, contacts):
+    if not args:
+        return 'You need to type username'
+    else:
+        if len(args) == 1:
+            return 'You need to type phone number'
+        name, phone = args
+        if name and name in contacts.keys():
+            contacts[name] = phone
+            return 'Contact added.'
+
+
+def get_all(args, contacts):
+    return contacts
+
+
 def get_phone(args, contacts):
     name = args
-    return contacts[name[0]]
+    if name:
+        return contacts[name[0]]
+    return 'You need to point out username, please!'
+
+
+def unknown_command(args, contacts):
+    return 'Unknown command'
+
+
+COMMAND_HANDLER = {
+    hello_command: ['hello', 'hi', 'привет'],
+    exit_command: ['exit', 'bye', 'close'],
+    add_contact: ['add', '+', 'добавить'],
+    change_contact: ['change', 'поменять'],
+    get_phone: ['phone', 'телефон'],
+    get_all: ['all', 'все', 'всё']
+}
+
+
+def parser(user_input: str):
+    for cmd, words in COMMAND_HANDLER.items():
+        for word in words:
+            if user_input.startswith(word):
+                return cmd, user_input[len(word):].split()
+    return unknown_command, []
 
 
 def main():
-    contacts = {}
     print('Welcome to the assistant bot!')
+
+    contacts = {}
     while True:
         user_input = input('Enter a command: ')
-        command, *args = parse_input(user_input)
-
-        if command in ['close', 'exit']:
-            print('Good bye!')
+        cmd, data = parser(user_input)
+        print(cmd(data, contacts))
+        if cmd == exit_command:
             break
-        elif command == 'hello':
-            print('How can I help you?')
-        elif command == 'add':
-            print(add_contact(args, contacts))
-        elif command == 'all':
-            print(contacts)
-        elif command == 'phone':
-            print(get_phone(args, contacts))
-        elif command == 'change':
-            print(add_contact(args, contacts))
-        else:
-            print('Invalid command.')
 
 
 if __name__ == '__main__':
